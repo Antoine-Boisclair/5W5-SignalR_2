@@ -47,6 +47,9 @@ export class ChatComponent  {
     });
 
     // TODO: Écouter le message pour mettre à jour la liste de channels
+    this.hubConnection.on('ChannelList', (data) => {
+      this.channelsList = data;
+    });
 
     this.hubConnection.on('NewMessage', (message) => {
       this.messages.push(message);
@@ -71,6 +74,7 @@ export class ChatComponent  {
 
   sendMessage() {
     let selectedChannelId = this.selectedChannel ? this.selectedChannel.id : 0;
+    console.log(this.selectedUser?.value);
     this.hubConnection!.invoke('SendMessage', this.message, selectedChannelId, this.selectedUser?.value);
   }
 
@@ -82,10 +86,13 @@ export class ChatComponent  {
 
   createChannel(){
     // TODO: Ajouter un invoke
+    this.hubConnection!.invoke('CreateChannel', this.newChannelName);
   }
 
   deleteChannel(channel: Channel){
     // TODO: Ajouter un invoke
+    this.hubConnection!.invoke('DeleteChannel', channel.id);
+    this.selectedChannel = null;
   }
 
   leaveChannel(){
